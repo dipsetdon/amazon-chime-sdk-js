@@ -1,0 +1,106 @@
+push --f all payend points no flutters --no-cache wrap all files <>osint<> 
+import SwiftUI
+
+struct DashboardView: View {
+    @StateObject private var networkService = NetworkService()
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Image(systemName: "shield.lefthalf.filled")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.cyan)
+                            .symbolEffect(.pulse, options: .repeating)
+                        
+                        Text(AppConstants.appName)
+                            .font(.largeTitle.bold())
+                        
+                        Text(AppConstants.tagline)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 20)
+                    
+                    // Status Card
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("Network Status", systemImage: "antenna.radiowaves.left.and.right")
+                                .font(.headline)
+                            
+                            HStack {
+                                Circle()
+                                    .fill(networkService.pathStatus.contains("Connected") ? .green : .red)
+                                    .frame(width: 10, height: 10)
+                                Text(networkService.pathStatus)
+                                    .font(.subheadline)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.horizontal)
+                    
+                    // Quick Actions
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                        QuickActionCard(title: "DNS Lookup", icon: "magnifyingglass", color: .cyan) {
+                            // Handled by tab switch in real use
+                        }
+                        QuickActionCard(title: "Clean Cache", icon: "trash", color: .orange) {}
+                        QuickActionCard(title: "Path Check", icon: "point.topleft.down.to.point.bottomright.curvepath", color: .blue) {}
+                        QuickActionCard(title: "Allow List", icon: "checklist", color: .green) {}
+                    }
+                    .padding(.horizontal)
+                    
+                    // Honest Limitations
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Label("Honest Limits", systemImage: "info.circle")
+                                .font(.headline)
+                                .foregroundStyle(.orange)
+                            
+                            Text("This app only works inside its own sandbox. It cannot scan other apps, system files, or act as a full device firewall. That is an iOS restriction, not a missing feature.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer(minLength: 40)
+                }
+            }
+            .navigationTitle("DonXDon")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+struct QuickActionCard: View {
+    let title: String
+    let icon: String
+    let color: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(color)
+                Text(title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+#Preview {
+    DashboardView()
+}
